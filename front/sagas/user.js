@@ -74,11 +74,11 @@ function* watchSignUp() {
 }
 function* signUp(action) {
   try {
-    // const result = yield call(requestSignUp, action.data);
-    yield delay(1000);
+    const result = yield call(signupRequest, action.data);
+    console.log(result);
     yield put({
       type: SIGN_UP_SUCCESS,
-      data: result.data
+      data: action.data
     });
   } catch (err) {
     yield put({
@@ -87,8 +87,8 @@ function* signUp(action) {
     });
   }
 }
-function requestSignUp(data) {
-  return axios.post('/api/signup', data);
+function signupRequest(data) {
+  return axios.post('http://localhost:3065/user', data);
 }
 
 //=== nickname change

@@ -1,10 +1,9 @@
 {
   "development": {
     "username": "root",
-    "password": "han13W@root",
+    "password": "han13@root",
     "database": "nodebird-react-next",
     "host": "127.0.0.1",
-    "port": "3306",
     "dialect": "mysql"
   },
   "test": {
