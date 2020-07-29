@@ -42,7 +42,7 @@ function* login(action) {
   }
 }
 function loginRequest(data) {
-  return axios.post('/api/login', data);
+  return axios.post('/user/login', data);
 }
 
 //=== logout
@@ -65,7 +65,7 @@ function* logout() {
   }
 }
 function logoutRequest() {
-  return axios.get('/api/logout');
+  return axios.get('/user/logout');
 }
 
 //=== sign up
@@ -88,7 +88,7 @@ function* signUp(action) {
   }
 }
 function signupRequest(data) {
-  return axios.post('http://localhost:3065/user', data);
+  return axios.post('/user', data);
 }
 
 //=== nickname change
@@ -111,7 +111,7 @@ function* changeNick(action) {
   }
 }
 function changeNickRequest(data) {
-  return axios.post('/api/nickname', data);
+  return axios.post('/user/nickname', data);
 }
 
 //=== follow, unfollow
@@ -134,7 +134,7 @@ function* follow(action) {
   }
 }
 function followRequest() {
-  return axios.post('/api/follow'); // ?
+  return axios.post('/user/follow'); // ?
 }
 
 function* watchUnFollow() {
@@ -156,7 +156,7 @@ function* unfollow(action) {
   }
 }
 function unfollowRequest() {
-  return axios.post('/api/unfollow'); //?
+  return axios.post('/user/unfollow'); //?
 }
 
 export default function* userSaga() {
