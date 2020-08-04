@@ -29,21 +29,13 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser('qwer1234'));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.use(
   session({
-    secret: 'qwer1234',
+    secret: process.env.COOKIE_SECRET,
     resave: true,
     saveUninitialized: true,
-    // saveUninitialized: true,
-    // resave: true,
-    // secret: 'nodejsreact',
-    // cookie: {
-    //   httpOnly: true,
-    //   secure: false,
-    //   maxAge: 30,
-    // },
   })
 );
 app.use(passport.initialize());
