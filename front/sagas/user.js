@@ -51,7 +51,6 @@ function* watchLogout() {
 function* logout() {
   try {
     yield call(logoutRequest);
-    yield delay(1000);
     yield put({
       type: LOG_OUT_SUCCESS
     });
@@ -63,7 +62,7 @@ function* logout() {
   }
 }
 function logoutRequest() {
-  return axios.get('/user/logout');
+  return axios.post('/user/logout');
 }
 
 //=== sign up
