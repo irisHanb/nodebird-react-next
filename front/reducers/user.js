@@ -59,12 +59,6 @@ const addDummyUser = (data) => ({
   Followers: [{ nickname: 'hanbrang' }, { nickname: '미영아' }, { nickname: 'iris' }]
 });
 
-export const logoutAciton = () => {
-  return {
-    type: LOG_OUT_REQUEST
-  };
-};
-
 // action 을 dispatch 하면 reducer 가 반응한다.
 const reducer = (state = initState, action) => {
   return produce(state, (draft) => {
