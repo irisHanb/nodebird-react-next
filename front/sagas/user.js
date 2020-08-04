@@ -28,11 +28,10 @@ function* watchLogin() {
 }
 function* login(action) {
   try {
-    // const result = yield call(loginRequest, action.data);
-    yield delay(1000);
+    const result = yield call(loginRequest, action.data);
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data
+      data: result.data
     });
   } catch (err) {
     yield put({
@@ -51,11 +50,10 @@ function* watchLogout() {
 }
 function* logout() {
   try {
-    // const result = yield call(logoutRequest);
+    yield call(logoutRequest);
     yield delay(1000);
     yield put({
       type: LOG_OUT_SUCCESS
-      // data: result.data
     });
   } catch (err) {
     yield put({
@@ -75,10 +73,10 @@ function* watchSignUp() {
 function* signUp(action) {
   try {
     const result = yield call(signupRequest, action.data);
-    console.log(result);
+
     yield put({
       type: SIGN_UP_SUCCESS,
-      data: action.data
+      data: result.data
     });
   } catch (err) {
     yield put({

@@ -1,4 +1,5 @@
-module.exports = (sequelize, DataTypes) => {
+const DataTypes = require('sequelize');
+module.exports = (sequelize) => {
   const User = sequelize.define(
     'User',
     {
@@ -12,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       password: {
-        type: DataTypes.STRING(30),
+        type: DataTypes.STRING(100),
         allowNull: false,
       },
     },

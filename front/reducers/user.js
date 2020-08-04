@@ -59,12 +59,6 @@ const addDummyUser = (data) => ({
   Followers: [{ nickname: 'hanbrang' }, { nickname: '미영아' }, { nickname: 'iris' }]
 });
 
-export const loginAction = (data) => {
-  return {
-    type: LOG_IN_REQUEST,
-    data
-  };
-};
 export const logoutAciton = () => {
   return {
     type: LOG_OUT_REQUEST
@@ -85,11 +79,12 @@ const reducer = (state = initState, action) => {
       case LOG_IN_SUCCESS:
         draft.loginLoading = false;
         draft.loginDone = true;
-        draft.me = addDummyUser(action.data);
+        draft.me = action.data;
+        // console.log(action.data);
         break;
       case LOG_IN_FAILURE:
         draft.loginLoading = false;
-        draft.loginError = action.data;
+        draft.loginError = action.error;
         break;
 
       //=== logout
