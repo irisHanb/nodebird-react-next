@@ -6,11 +6,19 @@ import { addPost } from '../reducers/post';
 import useInput from '../hooks/useInput';
 
 const PostForm = () => {
-  const { imagePaths, addPostDone } = useSelector((state) => state.post);
+  const { imagePaths, addPostDone, addPostLoading, addPostError } = useSelector(
+    (state) => state.post
+  );
 
   const [postText, onChangePostText, setPostText] = useInput('');
   const imageInput = useRef();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (addPostError) {
+      alert(addPostError);
+    }
+  }, [addPostError]);
 
   useEffect(() => {
     if (addPostDone) {
@@ -24,7 +32,6 @@ const PostForm = () => {
 
   const onSubmit = useCallback(() => {
     dispatch(addPost(postText));
-    setPostText('');
   }, [postText]);
 
   return (
@@ -39,7 +46,12 @@ const PostForm = () => {
       <div>
         <input type="file" multiple hidden ref={imageInput} />
         <Button onClick={onClickImageUpload}>이미지 업로드</Button>
-        <Button type="primary" htmlType="submit" style={{ float: 'right' }}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          style={{ float: 'right' }}
+          loading={addPostLoading}
+        >
           짹찍
         </Button>
       </div>

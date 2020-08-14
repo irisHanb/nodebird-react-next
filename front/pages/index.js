@@ -3,18 +3,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import AppLayout from '../components/AppLayout';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
-import { actionType, LOAD_POSTS_REQUEST } from '../reducers/post';
+import { LOAD_POSTS_REQUEST } from '../reducers/post';
+import { LOAD_USER_REQUEST } from '../reducers/user';
 
 const Home = () => {
   const { me } = useSelector((state) => state.user);
   const { mainPosts, hasMorePosts, loadPostLoading } = useSelector((state) => state.post);
-
+  const { loadUserLoading, loadUserDone, loadUserError } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
   useEffect(() => {
+    dispatch({
+      type: LOAD_USER_REQUEST
+    });
     dispatch({
       type: LOAD_POSTS_REQUEST
     });
   }, []);
+
   useEffect(() => {
     function onScroll() {
       if (
