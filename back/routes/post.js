@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { User, Post, Image, Comment } = require('../models');
 const { isLoggedIn } = require('./middlewares');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const imgPath = 'http://localhost:3065/';
+
+try {
+  fs.accessSync('uploads');
+} catch (err) {
+  console.log('uploads 폴더가 없으므로 생성합니다.');
+  fs.mkdirSync('uploads');
+}
 
 const getPostById = async (id) => {
   try {
@@ -20,13 +32,41 @@ const getPostById = async (id) => {
   }
 };
 
+const upload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, done) {
+      done(null, 'uploads');
+    },
+    filename(req, file, done) {
+      const ext = path.extname(file.originalname); // 확장자 추출
+      const basename = path.basename(file.originalname, ext); // 파일이름 추출
+      done(null, basename + '_' + new Date().getTime() + ext);
+    },
+  }),
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
+});
 // POST /post
-router.post('/', isLoggedIn, async (req, res, next) => {
+router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
   try {
     const post = await Post.create({
       content: req.body.content,
       UserId: req.user.id,
     });
+
+    if (req.body.image) {
+      if (Array.isArray(req.body.image)) {
+        const images = await Promise.all(
+          req.body.image.map((imgPath) =>
+            Image.create({ src: imgPath + imgPath })
+          )
+        );
+        await post.addImages(images);
+      } else {
+        const image = await Image.create({ src: imgPath + req.body.image });
+        await post.addImages(image);
+      }
+    }
+
     const fullPost = await Post.findOne({
       where: { id: post.id },
       include: [
@@ -59,6 +99,21 @@ router.post('/', isLoggedIn, async (req, res, next) => {
     next(err);
   }
 });
+// POST /post/images
+router.post(
+  '/images',
+  isLoggedIn,
+  upload.array('image'),
+  async (req, res, next) => {
+    try {
+      console.log(req.files);
+      res.status(200).json(req.files.map((v) => v.filename));
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  }
+);
 
 // POST /post/1/comment
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {

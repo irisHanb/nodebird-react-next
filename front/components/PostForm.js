@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Form, Input, Button } from 'antd';
 
-import { addPost } from '../reducers/post';
+import { UPLOAD_IMAGES_REQUEST, REMOVE_IMAGE, ADD_POST_REQUEST } from '../reducers/post';
 import useInput from '../hooks/useInput';
 
 const PostForm = () => {
@@ -31,8 +31,36 @@ const PostForm = () => {
   }, [imageInput.current]);
 
   const onSubmit = useCallback(() => {
-    dispatch(addPost(postText));
-  }, [postText]);
+    const formData = new FormData();
+    imagePaths.forEach((p) => {
+      formData.append('image', p);
+    });
+    formData.append('content', postText);
+    console.log('formData> ', formData);
+    dispatch({
+      type: ADD_POST_REQUEST,
+      data: formData
+    });
+  }, [postText, imagePaths]);
+
+  const onChangeImages = useCallback((e) => {
+    // console.log('images', e.target.files);
+    const imageFormData = new FormData();
+    [].forEach.call(e.target.files, (f) => {
+      imageFormData.append('image', f);
+    });
+    dispatch({
+      type: UPLOAD_IMAGES_REQUEST,
+      data: imageFormData
+    });
+  });
+
+  const onRemoveImage = useCallback((idx) => () => {
+    dispatch({
+      type: REMOVE_IMAGE,
+      data: idx
+    });
+  });
 
   return (
     <Form style={{ marginTop: '20px' }} encType="multipart/form-data" onFinish={onSubmit}>
@@ -44,7 +72,14 @@ const PostForm = () => {
         onChange={onChangePostText}
       />
       <div>
-        <input type="file" multiple hidden ref={imageInput} />
+        <input
+          type="file"
+          name="image"
+          multiple
+          hidden
+          ref={imageInput}
+          onChange={onChangeImages}
+        />
         <Button onClick={onClickImageUpload}>이미지 업로드</Button>
         <Button
           type="primary"
@@ -56,11 +91,11 @@ const PostForm = () => {
         </Button>
       </div>
       <div>
-        {imagePaths.map((v) => (
+        {imagePaths.map((v, idx) => (
           <div key={v} style={{ display: 'inline-block' }}>
-            <img src={v} alt={v} style={{ width: '200px' }} />
+            <img src={`http://localhost:3065/${v}`} alt={v} style={{ width: '200px' }} />
             <div>
-              <Button>제거</Button>
+              <Button onClick={onRemoveImage(idx)}>제거</Button>
             </div>
           </div>
         ))}

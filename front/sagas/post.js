@@ -18,7 +18,10 @@ import {
   LIKE_POST_FAILURE,
   UNLIKE_POST_REQUEST,
   UNLIKE_POST_SUCCESS,
-  UNLIKE_POST_FAILURE
+  UNLIKE_POST_FAILURE,
+  UPLOAD_IMAGES_REQUEST,
+  UPLOAD_IMAGES_SUCCESS,
+  UPLOAD_IMAGES_FAILURE
 } from '../reducers/post';
 import { REMOVE_POST_OF_ME, ADD_POST_TO_ME } from '../reducers/user';
 
@@ -50,7 +53,7 @@ function* watchAddPost() {
 }
 function* addPost(action) {
   try {
-    const result = yield call(addPostRequest, action.data);
+    const result = yield call(addPostAPI, action.data);
     yield put({
       type: ADD_POST_SUCCESS,
       data: result.data
@@ -68,8 +71,8 @@ function* addPost(action) {
       });
   }
 }
-function addPostRequest(data) {
-  return axios.post('/post', { content: data });
+function addPostAPI(data) {
+  return axios.post('/post', data);
 }
 
 //=== remove post
@@ -119,6 +122,29 @@ function* addComment(action) {
 }
 function addCommentAPI(data) {
   return axios.post(`/post/${data.postId}/comment`, data);
+}
+
+//=== upload images
+function* watchUploadImages() {
+  yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
+}
+function* uploadImages(action) {
+  try {
+    const result = yield call(uploadImagesAPI, action.data);
+    yield put({
+      type: UPLOAD_IMAGES_SUCCESS,
+      data: result.data
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: UPLOAD_IMAGES_FAILURE,
+      error: err.response.data
+    });
+  }
+}
+function uploadImagesAPI(formData) {
+  return axios.post('/post/images', formData);
 }
 
 //=== like
@@ -171,6 +197,7 @@ export default function* postSaga() {
     fork(watchAddComment),
     fork(watchRemovePost),
     fork(watchLoadPosts),
+    fork(watchUploadImages),
     fork(watchLikePost),
     fork(watchUnlikePost)
   ]);

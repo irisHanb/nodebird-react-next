@@ -25,7 +25,11 @@ const initState = {
   likePostError: null,
   unlikePostDone: false,
   unlikePostLoading: false,
-  unlikePostError: null
+  unlikePostError: null,
+
+  uploadImagesDone: false,
+  uploadImagesLoading: false,
+  uploadImagesError: null
 };
 
 export const LOAD_POSTS_REQUEST = 'LOAD_POST_REQUEST';
@@ -48,6 +52,11 @@ export const LIKE_POST_FAILURE = 'LIKE_POST_FAILURE';
 export const UNLIKE_POST_REQUEST = 'UNLIKE_POST_REQUEST';
 export const UNLIKE_POST_SUCCESS = 'UNLIKE_POST_SUCCESS';
 export const UNLIKE_POST_FAILURE = 'UNLIKE_POST_FAILURE';
+
+export const UPLOAD_IMAGES_REQUEST = 'UPLOAD_IMAGES_REQUEST';
+export const UPLOAD_IMAGES_SUCCESS = 'UPLOAD_IMAGES_SUCCESS';
+export const UPLOAD_IMAGES_FAILURE = 'UPLOAD_IMAGES_FAILURE';
+export const REMOVE_IMAGE = 'REMOVE_IMAGE';
 
 export const addPost = (data) => ({
   type: ADD_POST_REQUEST,
@@ -93,11 +102,19 @@ const reducer = (state = initState, action) => {
         draft.loadPostLoading = false;
         draft.loadPostDone = true;
         draft.mainPosts = action.data.concat(draft.mainPosts);
+        draft.mainPosts.map((info) => {
+          info.Images.map((imgInfo) => {
+            if (!imgInfo.src.match(/http:\/\/localhost:3065\/+/)) {
+              imgInfo.src = 'http://localhost:3065/' + imgInfo.src;
+            }
+          });
+        });
         draft.hasMorePosts = draft.mainPosts.length < 50;
         break;
       case LOAD_POSTS_FAILURE:
         draft.loadPostLoading = false;
         draft.loadPostError = action.error;
+        alert(action.error);
         break;
 
       //=== add post
@@ -110,6 +127,7 @@ const reducer = (state = initState, action) => {
         draft.addPostLoading = false;
         draft.addPostDone = true;
         draft.mainPosts.unshift(action.data);
+        draft.imagePaths = [];
         break;
       case ADD_POST_FAILURE:
         draft.addPostLoading = false;
@@ -149,6 +167,26 @@ const reducer = (state = initState, action) => {
       case ADD_COMMENT_FAILURE:
         draft.addCommentLoading = false;
         draft.addCommentError = action.error;
+        break;
+
+      //=== upload images
+      case UPLOAD_IMAGES_REQUEST:
+        draft.uploadImagesLoading = true;
+        draft.uploadImagesDone = false;
+        draft.uploadImagesError = null;
+        break;
+      case UPLOAD_IMAGES_SUCCESS:
+        draft.uploadImagesLoading = false;
+        draft.uploadImagesDone = true;
+        draft.imagePaths = action.data;
+        break;
+      case UPLOAD_IMAGES_FAILURE:
+        draft.uploadImagesLoading = false;
+        draft.uploadImagesError = action.error;
+        break;
+
+      case REMOVE_IMAGE:
+        draft.imagePaths = draft.imagePaths.filter((v, idx) => idx != action.data);
         break;
 
       //=== like
