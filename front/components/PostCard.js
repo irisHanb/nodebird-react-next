@@ -14,6 +14,7 @@ import PostImages from './PostImages';
 import CommentForm from './CommentForm';
 import FollowButton from './FollowButton';
 import { REMOVE_POST_REQUEST, LIKE_POST_REQUEST, UNLIKE_POST_REQUEST } from '../reducers/post';
+import PostCardContent from './PostCardContent';
 
 const PostCard = ({ post }) => {
   const dispatch = useDispatch();
@@ -81,7 +82,7 @@ const PostCard = ({ post }) => {
         <Card.Meta
           avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
           title={post.User.nickname}
-          description={post.content}
+          description={<PostCardContent postData={post.content} />}
         />
       </Card>
       {onOpenCommentForm && (
