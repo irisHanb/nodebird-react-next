@@ -115,5 +115,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# uploas files
-.uploads/*
+# uploads files
+.uploads
