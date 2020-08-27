@@ -20,8 +20,8 @@ const PostImages = ({ imgs }) => {
         <img
           role="presentation"
           width="100%"
-          src={`http://localhost:3065/${imgs[0].src}`}
-          alt={`http://localhost:3065/${imgs[0].src}`}
+          src={imgs[0].src}
+          alt={imgs[0].src}
           onClick={onClickZoom}
         />
         {onZoom && <ImagesZoom imgs={imgs} onClose={onClose} />}
@@ -34,15 +34,15 @@ const PostImages = ({ imgs }) => {
         <img
           role="presentation"
           width="50%"
-          src={`http://localhost:3065/${imgs[0].src}`}
-          alt={`http://localhost:3065/${imgs[0].src}`}
+          src={imgs[0].src}
+          alt={imgs[0].src}
           onClick={onClickZoom}
         />
         <img
           role="presentation"
           width="50%"
-          src={`http://localhost:3065/${imgs[1].src}`}
-          alt={`http://localhost:3065/${imgs[1].src}`}
+          alt={imgs[1].src}
+          src={imgs[1].src}
           onClick={onClickZoom}
         />
         {onZoom && <ImagesZoom imgs={imgs} onClose={onClose} />}
@@ -54,8 +54,8 @@ const PostImages = ({ imgs }) => {
       <img
         role="presentation"
         width="50%"
-        src={`http://localhost:3065/${imgs[0].src}`}
-        alt={`http://localhost:3065/${imgs[0].src}`}
+        src={`${staticUrl}${imgs[0].src}`}
+        alt={`${staticUrl}${imgs[0].src}`}
         onClick={onClickZoom}
       />
       <div

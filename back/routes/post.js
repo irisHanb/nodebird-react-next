@@ -72,15 +72,19 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
     }
 
     if (req.body.image) {
+      const staticUrl = 'http://localhost:3065/';
       if (Array.isArray(req.body.image)) {
         const images = await Promise.all(
           req.body.image.map((imgPath) =>
-            Image.create({ src: imgPath + imgPath })
+            Image.create({ src: staticUrl + imgPath })
           )
         );
         await post.addImages(images);
+        console.log('>images>', images);
       } else {
-        const image = await Image.create({ src: imgPath + req.body.image });
+        const image = await Image.create({
+          src: staticUrl + req.body.image,
+        });
         await post.addImages(image);
       }
     }
