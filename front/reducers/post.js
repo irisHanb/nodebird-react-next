@@ -109,20 +109,12 @@ const reducer = (state = initState, action) => {
       case LOAD_POSTS_SUCCESS:
         draft.loadPostLoading = false;
         draft.loadPostDone = true;
-        draft.mainPosts = action.data.concat(draft.mainPosts);
-        // draft.mainPosts.map((info) => {
-        //   info.Images.map((imgInfo) => {
-        //     if (!imgInfo.src.match(/http:\/\/localhost:3065\/+/)) {
-        //       imgInfo.src = 'http://localhost:3065/' + imgInfo.src;
-        //     }
-        //   });
-        // });
-        draft.hasMorePosts = draft.mainPosts.length < 50;
+        draft.mainPosts = draft.mainPosts.concat(action.data);
+        draft.hasMorePosts = draft.mainPosts.length === 10;
         break;
       case LOAD_POSTS_FAILURE:
         draft.loadPostLoading = false;
         draft.loadPostError = action.error;
-        alert(action.error);
         break;
 
       //=== add post

@@ -34,7 +34,7 @@ function* watchLoadPosts() {
 }
 function* loadPosts(action) {
   try {
-    const result = yield call(loadPostAPI, action.data);
+    const result = yield call(loadPostAPI, action.lastId);
     yield put({
       type: LOAD_POSTS_SUCCESS,
       data: result.data
@@ -46,8 +46,8 @@ function* loadPosts(action) {
     });
   }
 }
-function loadPostAPI(data) {
-  return axios.get('/posts', data);
+function loadPostAPI(lastId = 0) {
+  return axios.get(`/posts?lastId=${lastId}`);
 }
 
 //== addPost
