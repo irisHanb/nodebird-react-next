@@ -21,6 +21,12 @@ const getPostById = async (id) => {
       where: {
         id,
       },
+      include: [
+        {
+          model: Post,
+          as: 'Retweet',
+        },
+      ],
     });
     if (!post) {
       return res.status(403).send('게시글이 존재하지 않습니다.');
@@ -146,6 +152,95 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
       ],
     });
     res.status(201).json(fullComment);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+// POST /post/1/retweet
+router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId * 1 },
+      include: [{ model: Post, as: 'Retweet' }],
+    });
+    if (!post) {
+      return res.status(403).send('존재하지 않는 게시글입니다.');
+    }
+    // check own post
+    if (
+      req.user.id === post.UserId ||
+      (post.Retweet && post.Retweet.UserId === req.user.id)
+    ) {
+      return res.status(403).send('자신의 글은 리트윗할 수 없습니다.');
+    }
+    // check double retweet
+    const retweetTargetId = post.RetweetId || post.id;
+    const exPost = await Post.findOne({
+      where: {
+        UserId: req.user.id,
+        RetweetId: retweetTargetId,
+      },
+    });
+    if (exPost) {
+      return res.status(403).send('이미 리트윗했습니다.');
+    }
+
+    const retweet = await Post.create({
+      UserId: req.user.id,
+      RetweetId: retweetTargetId,
+      content: 'retweet',
+    });
+    const retweetWithPrevPost = await Post.findOne({
+      where: { id: retweet.id },
+      include: [
+        {
+          model: Post,
+          as: 'Retweet',
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'],
+            },
+            {
+              model: Image,
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: Image,
+        },
+        {
+          model: Comment,
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'],
+            },
+          ],
+        },
+      ],
+    });
+
+    res.status(201).json(retweetWithPrevPost);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+//PATCH /post/1/retweet
+router.patch('/:postId/retwee', isLoggedIn, async (req, res, next) => {
+  try {
+    const id = req.params.postId * 1;
+    const post = await Post.findOne({ where: { id } });
+    await post.addRetweet(id);
+    res.json({ PostId: post.id, UserId: req.user.id });
   } catch (err) {
     console.error(err);
     next(err);

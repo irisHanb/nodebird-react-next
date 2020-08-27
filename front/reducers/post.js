@@ -20,6 +20,10 @@ const initState = {
   addCommentLoading: false,
   addCommentError: null,
 
+  retweetDone: false,
+  retweetLoading: false,
+  retweetError: null,
+
   likePostDone: false,
   likePostLoading: false,
   likePostError: null,
@@ -45,6 +49,10 @@ export const REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
 export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
+
+export const RETWEET_REQUEST = 'RETWEET_REQUEST';
+export const RETWEET_SUCCESS = 'RETWEET_SUCCESS';
+export const RETWEET_FAILURE = 'RETWEET_FAILURE';
 
 export const LIKE_POST_REQUEST = 'LIKE_POST_REQUEST';
 export const LIKE_POST_SUCCESS = 'LIKE_POST_SUCCESS';
@@ -102,13 +110,13 @@ const reducer = (state = initState, action) => {
         draft.loadPostLoading = false;
         draft.loadPostDone = true;
         draft.mainPosts = action.data.concat(draft.mainPosts);
-        draft.mainPosts.map((info) => {
-          info.Images.map((imgInfo) => {
-            if (!imgInfo.src.match(/http:\/\/localhost:3065\/+/)) {
-              imgInfo.src = 'http://localhost:3065/' + imgInfo.src;
-            }
-          });
-        });
+        // draft.mainPosts.map((info) => {
+        //   info.Images.map((imgInfo) => {
+        //     if (!imgInfo.src.match(/http:\/\/localhost:3065\/+/)) {
+        //       imgInfo.src = 'http://localhost:3065/' + imgInfo.src;
+        //     }
+        //   });
+        // });
         draft.hasMorePosts = draft.mainPosts.length < 50;
         break;
       case LOAD_POSTS_FAILURE:
@@ -187,6 +195,22 @@ const reducer = (state = initState, action) => {
 
       case REMOVE_IMAGE:
         draft.imagePaths = draft.imagePaths.filter((v, idx) => idx != action.data);
+        break;
+
+      //=== retweet
+      case RETWEET_REQUEST:
+        draft.retweetDone = false;
+        draft.retweetLoading = true;
+        draft.retweetError = null;
+        break;
+      case RETWEET_SUCCESS:
+        draft.retweetDone = true;
+        draft.retweetLoading = false;
+        draft.mainPosts.unshift(action.data);
+        break;
+      case RETWEET_FAILURE:
+        draft.retweetLoading = false;
+        draft.retweetError = action.error;
         break;
 
       //=== like

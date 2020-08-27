@@ -10,7 +10,14 @@ const Home = () => {
   const { me } = useSelector((state) => state.user);
   const { mainPosts, hasMorePosts, loadPostLoading } = useSelector((state) => state.post);
   const { loadUserLoading, loadUserDone, loadUserError } = useSelector((state) => state.user);
+  const { retweetError } = useSelector((state) => state.post);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (retweetError) {
+      alert(retweetError);
+    }
+  }, [retweetError]);
 
   useEffect(() => {
     dispatch({
@@ -34,10 +41,10 @@ const Home = () => {
         }
       }
     }
-    window.addEventListener('scroll', onScroll);
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-    };
+    // window.addEventListener('scroll', onScroll);
+    // return () => {
+    //   window.removeEventListener('scroll', onScroll);
+    // };
   }, [hasMorePosts, loadPostLoading]);
 
   return (
