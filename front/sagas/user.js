@@ -66,7 +66,6 @@ function* watchLoadUser() {
 function* loadUser(action) {
   try {
     const result = yield call(loadUserAPI, action.data);
-    console.log('saga> loadUser> ', result);
     yield put({
       type: LOAD_USER_SUCCESS,
       data: result.data ? result.data : result
