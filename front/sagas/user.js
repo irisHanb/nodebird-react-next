@@ -43,7 +43,7 @@ function* watchLoadMyInfo() {
 }
 function* loadMyInfo() {
   try {
-    const result = yield call(loadMyInfoAPI);    
+    const result = yield call(loadMyInfoAPI);
     yield put({
       type: LOAD_MY_INFO_SUCCESS,
       data: result.data
@@ -66,6 +66,7 @@ function* watchLoadUser() {
 function* loadUser(action) {
   try {
     const result = yield call(loadUserAPI, action.data);
+    console.log('saga> loadUser> ', result);
     yield put({
       type: LOAD_USER_SUCCESS,
       data: result.data ? result.data : result

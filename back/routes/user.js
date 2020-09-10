@@ -34,7 +34,6 @@ const getFullUser = async (id) => {
 
 // GET /user
 router.get('/', async (req, res, next) => {
-  console.log('headers', req.headers);
   try {
     if (req.user) {
       const fullUser = await getFullUser(req.user.id);
@@ -70,7 +69,7 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
 });
 
 // POST /user/
-router.post('/', isNotLoggedIn, async (req, res, next) => {  
+router.post('/', isNotLoggedIn, async (req, res, next) => {
   try {
     const exUser = await User.findOne({
       where: {
@@ -196,6 +195,26 @@ router.get('/followers', isLoggedIn, async (req, res, next) => {
     }
     const followers = await user.getFollowers();
     res.status(200).json(followers);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+// GET /user/1
+router.get('/:userId', async (req, res, next) => {
+  try {
+    const fullUser = await getFullUser(req.params.userId);
+    const finalUser = fullUser.toJSON();
+    finalUser.Posts = fullUser.Posts.length;
+    finalUser.Followings = fullUser.Followings.length;
+    finalUser.Followers = fullUser.Followers.length;
+
+    if (fullUser) {
+      res.status(200).json(finalUser);
+    } else {
+      res.status(404).json('존재하지 않는 사용자 입니다.');
+    }
   } catch (err) {
     console.error(err);
     next(err);
