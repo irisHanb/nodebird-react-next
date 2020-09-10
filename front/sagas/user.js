@@ -4,6 +4,9 @@ import {
   LOAD_USER_REQUEST,
   LOAD_USER_SUCCESS,
   LOAD_USER_FAILURE,
+  LOAD_MY_INFO_REQUEST,
+  LOAD_MY_INFO_SUCCESS,
+  LOAD_MY_INFO_FAILURE,
   LOG_IN_REQUEST,
   LOG_IN_SUCCESS,
   LOG_IN_FAILURE,
@@ -34,13 +37,35 @@ import {
 } from '../reducers/user';
 import { func } from 'prop-types';
 
+//=== my info
+function* watchLoadMyInfo() {
+  yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
+}
+function* loadMyInfo() {
+  try {
+    const result = yield call(loadMyInfoAPI);    
+    yield put({
+      type: LOAD_MY_INFO_SUCCESS,
+      data: result.data
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_MY_INFO_FAILURE,
+      error: err.response?.data
+    });
+  }
+}
+function loadMyInfoAPI() {
+  return axios.get('/user');
+}
+
 //=== user
 function* watchLoadUser() {
   yield takeLatest(LOAD_USER_REQUEST, loadUser);
 }
 function* loadUser(action) {
   try {
-    const result = yield call(loadUserAPI);
+    const result = yield call(loadUserAPI, action.data);
     yield put({
       type: LOAD_USER_SUCCESS,
       data: result.data ? result.data : result
@@ -53,8 +78,8 @@ function* loadUser(action) {
     });
   }
 }
-function loadUserAPI() {
-  return axios.get('/user');
+function loadUserAPI(userId) {
+  return axios.get(`/user/${userId}`);
 }
 
 //=== login
@@ -259,6 +284,7 @@ function loadFollowersAPI() {
 
 export default function* userSaga() {
   yield all([
+    fork(watchLoadMyInfo),
     fork(watchLoadUser),
     fork(watchLogin),
     fork(watchLogout),

@@ -42,7 +42,7 @@ function* loadPosts(action) {
   } catch (err) {
     yield put({
       type: LOAD_POSTS_FAILURE,
-      error: err.response.data
+      error: err.response?.data
     });
   }
 }

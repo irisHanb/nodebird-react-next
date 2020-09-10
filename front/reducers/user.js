@@ -5,6 +5,10 @@ const initState = {
   loadUserLoading: false,
   loadUserError: null,
 
+  loadMyInfoDone: false,
+  loadMyInfoLoading: false,
+  loadMyInfoError: null,
+
   loginDone: false,
   loginLoading: false,
   loginError: false,
@@ -41,13 +45,16 @@ const initState = {
   loadFollowersError: null,
 
   me: null,
-  signUpData: {},
-  loginData: {}
+  userInfo: null
 };
 
 export const LOAD_USER_REQUEST = 'LOAD_USER_REQUEST';
 export const LOAD_USER_SUCCESS = 'LOAD_USER_SUCCESS';
 export const LOAD_USER_FAILURE = 'LOAD_USER_FAILURE';
+
+export const LOAD_MY_INFO_REQUEST = 'LOAD_MY_INFO_REQUEST';
+export const LOAD_MY_INFO_SUCCESS = 'LOAD_MY_INFO_SUCCESS';
+export const LOAD_MY_INFO_FAILURE = 'LOAD_MY_INFO_FAILURE';
 
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST';
 export const LOG_IN_SUCCESS = 'LOG_IN_SUCCESS';
@@ -98,16 +105,31 @@ const addDummyUser = (data) => ({
 const reducer = (state = initState, action) => {
   return produce(state, (draft) => {
     switch (action.type) {
+      //=== my info
+      case LOAD_MY_INFO_REQUEST:
+        draft.loadMyInfoLoading = true;
+        draft.loadMyInfoDone = false;
+        draft.loadMyInfoError = null;
+        break;
+      case LOAD_MY_INFO_SUCCESS:
+        draft.loadMyInfoLoading = false;
+        draft.loadMyInfoDone = true;
+        draft.me = action.data;
+        break;
+      case LOAD_MY_INFO_FAILURE:
+        draft.loadMyInfoLoading = false;
+        draft.loadMyInfoError = action.error;
+
       //=== load user
       case LOAD_USER_REQUEST:
         draft.loadUserLoading = true;
-        draft.loadUserDone = false;
-        draft.loadUserError = null;
+        draft.loaUseroDone = false;
+        draft.loaUseroError = null;
         break;
       case LOAD_USER_SUCCESS:
         draft.loadUserLoading = false;
         draft.loadUserDone = true;
-        draft.me = action.data;
+        draft.userInfo = action.data;
         break;
       case LOAD_USER_FAILURE:
         draft.loadUserLoading = false;

@@ -33,7 +33,8 @@ const getFullUser = async (id) => {
 };
 
 // GET /user
-router.get('/', isLoggedIn, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
+  console.log('headers', req.headers);
   try {
     if (req.user) {
       const fullUser = await getFullUser(req.user.id);
@@ -47,6 +48,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
   }
 });
 
+// POST /user/login
 router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
@@ -67,8 +69,8 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
   })(req, res, next);
 });
 
-router.post('/', isNotLoggedIn, async (req, res, next) => {
-  // POST /user/
+// POST /user/
+router.post('/', isNotLoggedIn, async (req, res, next) => {  
   try {
     const exUser = await User.findOne({
       where: {

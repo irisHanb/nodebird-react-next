@@ -18,8 +18,7 @@ const Signup = () => {
   const { signupLoading, signupDone, signupError, me } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (me && me.id) {
-      console.log(me);
+    if (me && me.id) {      
       Router.replace('/');
     }
   }, [me]);
@@ -66,8 +65,7 @@ const Signup = () => {
     }
     if (!term) {
       return setTermError(true);
-    }
-    console.log(email, nickname, password);
+    }    
     dispatch({
       type: SIGN_UP_REQUEST,
       data: { email, nickname, password }
