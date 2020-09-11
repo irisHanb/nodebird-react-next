@@ -1,6 +1,9 @@
 import { all, fork, takeLatest, delay, put, call, take } from 'redux-saga/effects';
 import axios from 'axios';
 import {
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS,
+  LOAD_POST_FAILURE,
   LOAD_POSTS_REQUEST,
   LOAD_POSTS_SUCCESS,
   LOAD_POSTS_FAILURE,
@@ -28,13 +31,38 @@ import {
 } from '../reducers/post';
 import { REMOVE_POST_OF_ME, ADD_POST_TO_ME } from '../reducers/user';
 
+//=== load post (single)
+function* watchLoadPost() {
+  yield takeLatest(LOAD_POST_REQUEST, loadPost);
+}
+function* loadPost(action) {
+  try {
+    const result = yield call(loadPostAPI, action.data);
+    console.log('saga> loadPost> ', result.data);
+    yield put({
+      type: LOAD_POST_SUCCESS,
+      data: result.data
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_POST_FAILURE,
+      error: err.response?.data
+    });
+  }
+}
+function loadPostAPI(postId) {
+  return axios.get(`/post/${postId}`);
+}
+
 //=== load posts
 function* watchLoadPosts() {
   yield takeLatest(LOAD_POSTS_REQUEST, loadPosts);
 }
 function* loadPosts(action) {
   try {
-    const result = yield call(loadPostAPI, action.lastId);
+    const result = yield call(loadPostsAPI, action.lastId);
+    console.log('saga> loadPost list> ', result.data);
+
     yield put({
       type: LOAD_POSTS_SUCCESS,
       data: result.data
@@ -46,7 +74,7 @@ function* loadPosts(action) {
     });
   }
 }
-function loadPostAPI(lastId = 0) {
+function loadPostsAPI(lastId = 0) {
   return axios.get(`/posts?lastId=${lastId}`);
 }
 
@@ -221,6 +249,7 @@ export default function* postSaga() {
     fork(watchAddPost),
     fork(watchAddComment),
     fork(watchRemovePost),
+    fork(watchLoadPost),
     fork(watchLoadPosts),
     fork(watchUploadImages),
     fork(watchRetweet),

@@ -51,6 +51,7 @@ const upload = multer({
   }),
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
 });
+
 // POST /post
 router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
   try {
@@ -79,7 +80,7 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
             Image.create({ src: staticUrl + imgPath })
           )
         );
-        await post.addImages(images);        
+        await post.addImages(images);
       } else {
         const image = await Image.create({
           src: staticUrl + req.body.image,
@@ -120,13 +121,14 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
     next(err);
   }
 });
+
 // POST /post/images
 router.post(
   '/images',
   isLoggedIn,
   upload.array('image'),
   async (req, res, next) => {
-    try {      
+    try {
       res.status(200).json(req.files.map((v) => v.filename));
     } catch (err) {
       console.error(err);
@@ -280,6 +282,52 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => {
       UserId: req.user.id,
     });
     res.status(200).json({ PostId: parseInt(req.params.postId, 10) });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+// GET /post/1
+router.get('/:postId', async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId },
+    });
+    if (!post) {
+      return res.status(404).send('없는 게시글입니다.');
+    }
+    const fullPost = await Post.findOne({
+      where: { id: post.id },
+      include: [
+        {
+          model: Post,
+          as: 'Retweet',
+          include: [
+            { model: User, attributes: ['id', 'nickname'] },
+            { model: Image },
+          ],
+        },
+        {
+          model: User,
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: User,
+          as: 'Likers',
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: Image,
+        },
+        {
+          model: Comment,
+          include: [{ model: User, attributes: ['id', 'nickname'] }],
+        },
+      ],
+    });
+    res.status(200).json(fullPost);
+    console.log(fullPost);
   } catch (err) {
     console.error(err);
     next(err);

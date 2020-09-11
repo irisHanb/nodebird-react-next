@@ -2,11 +2,16 @@ import produce from 'immer';
 
 const initState = {
   mainPosts: [],
+  singlePost: null,
   imagePaths: [],
 
   loadPostDone: false,
   loadPostLoading: false,
   loadPostError: null,
+
+  loadPostsDone: false,
+  loadPostsLoading: false,
+  loadPostsError: null,
   hasMorePosts: true,
 
   addPostDone: false,
@@ -36,6 +41,9 @@ const initState = {
   uploadImagesError: null
 };
 
+export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST';
+export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS';
+export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE';
 export const LOAD_POSTS_REQUEST = 'LOAD_POST_REQUEST';
 export const LOAD_POSTS_SUCCESS = 'LOAD_POST_SUCCESS';
 export const LOAD_POSTS_FAILURE = 'LOAD_POST_FAILURE';
@@ -101,20 +109,38 @@ const reducer = (state = initState, action) => {
   return produce(state, (draft) => {
     switch (action.type) {
       //=== load post
-      case LOAD_POSTS_REQUEST:
+      case LOAD_POST_REQUEST:
+        draft.singlePost = null;
         draft.loadPostLoading = true;
         draft.loadPostDone = false;
         draft.loadPostError = null;
         break;
-      case LOAD_POSTS_SUCCESS:
+      case LOAD_POST_SUCCESS:
         draft.loadPostLoading = false;
         draft.loadPostDone = true;
+        draft.singlePost = action.data;
+        break;
+      case LOAD_POST_FAILURE:
+        draft.loadPostLoading = false;
+        draft.loadPostError = action.error;
+        draft.singlePost = null;
+        break;
+
+      //=== load posts
+      case LOAD_POSTS_REQUEST:
+        draft.loadPostsLoading = true;
+        draft.loadPostsDone = false;
+        draft.loadPostsError = null;
+        break;
+      case LOAD_POSTS_SUCCESS:
+        draft.loadPostsLoading = false;
+        draft.loadPostsDone = true;
         draft.mainPosts = draft.mainPosts.concat(action.data);
         draft.hasMorePosts = draft.mainPosts.length === 10;
         break;
       case LOAD_POSTS_FAILURE:
-        draft.loadPostLoading = false;
-        draft.loadPostError = action.error;
+        draft.loadPostsLoading = false;
+        draft.loadPostsError = action.error;
         break;
 
       //=== add post
