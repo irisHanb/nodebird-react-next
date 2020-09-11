@@ -6,6 +6,7 @@ import wrapper from '../../store/configureStore';
 
 import PostCard from '../../components/PostCard';
 import AppLayout from '../../components/AppLayout';
+import Head from 'next/head';
 import { useEffect } from 'react';
 
 const Post = ({ errorMsg }) => {
@@ -15,7 +16,15 @@ const Post = ({ errorMsg }) => {
 
   return (
     <AppLayout>
-      {errorMsg ? <div>관련 게시글이 없습니다.</div> : <PostCard post={singlePost}></PostCard>}
+      <Head>
+        <title>{singlePost.User.nickname}님의 글</title>
+        <meta name="description" content={singlePost.content} />
+        <meta property="og:title" content={`${singlePost.User.nickname}님의 게시글`} />
+        <meta property="og:description" content={singlePost.content} />
+        <meta property="og:image" content={singlePost.Images[0]?.src} />
+        <meta property="og:url" content={``} />
+      </Head>
+      {errorMsg ? <div>{errorMsg}</div> : <PostCard post={singlePost}></PostCard>}
     </AppLayout>
   );
 };
