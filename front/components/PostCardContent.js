@@ -7,10 +7,10 @@ const PostCardContent = ({ postData }) => {
 
   return (
     <div>
-      {datas.map((v) => {
+      {datas.map((v, idx) => {
         if (v.match(checkReg)) {
           return (
-            <Link href={{ pathname: 'hashtag', query: { tag: v.slice(1) } }}>
+            <Link href={`/hashtag/${v.slice(1)}`} key={idx}>
               <a>{v}</a>
             </Link>
           );

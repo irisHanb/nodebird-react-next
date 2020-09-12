@@ -2,8 +2,9 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
-const { User, Post } = require('../models');
+const { User, Post, Comment, Image } = require('../models');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
+const { Op } = require('sequelize');
 
 const router = express.Router();
 
@@ -41,6 +42,66 @@ router.get('/', async (req, res, next) => {
     } else {
       res.status(200).json(null);
     }
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+// GET /user/1/posts
+router.get('/:userId/posts', async (req, res, next) => {
+  console.log('hello.... user posts');
+  try {
+    const where = { UserId: req.params.userId };
+    const lastId = parseInt(req.query.lastId, 10);
+    if (lastId) {
+      where.id = { [Op.lt]: lastId };
+    }
+    const posts = await Post.findAll({
+      where,
+      limit: 10,
+      order: [
+        ['createdAt', 'DESC'],
+        [Comment, 'createdAt', 'DESC'],
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: Image,
+        },
+        {
+          model: Comment,
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: 'Likers',
+          attributes: ['id'],
+        },
+        {
+          model: Post,
+          as: 'Retweet',
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'],
+            },
+            {
+              model: Image,
+            },
+          ],
+        },
+      ],
+    });
+    res.status(200).json(posts);
   } catch (err) {
     console.error(err);
     next(err);

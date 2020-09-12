@@ -7,6 +7,12 @@ import {
   LOAD_POSTS_REQUEST,
   LOAD_POSTS_SUCCESS,
   LOAD_POSTS_FAILURE,
+  LOAD_USER_POSTS_REQUEST,
+  LOAD_USER_POSTS_SUCCESS,
+  LOAD_HASHTAG_POSTS_FAILURE,
+  LOAD_HASHTAG_POSTS_REQUEST,
+  LOAD_HASHTAG_POSTS_SUCCESS,
+  LOAD_USER_POSTS_FAILURE,
   ADD_POST_REQUEST,
   ADD_POST_SUCCESS,
   ADD_POST_FAILURE,
@@ -61,13 +67,12 @@ function* watchLoadPosts() {
 function* loadPosts(action) {
   try {
     const result = yield call(loadPostsAPI, action.lastId);
-    console.log('saga> loadPost list> ', result.data);
-
     yield put({
       type: LOAD_POSTS_SUCCESS,
       data: result.data
     });
   } catch (err) {
+    console.error(err);
     yield put({
       type: LOAD_POSTS_FAILURE,
       error: err.response?.data
@@ -76,6 +81,52 @@ function* loadPosts(action) {
 }
 function loadPostsAPI(lastId = 0) {
   return axios.get(`/posts?lastId=${lastId}`);
+}
+
+function* watchLoadUserPosts() {
+  yield takeLatest(LOAD_USER_POSTS_REQUEST, loadUserPosts);
+}
+function* loadUserPosts(action) {
+  console.log('saga> ', action);
+  try {
+    const result = yield call(loadUserPostsAPI, action.data, action.lastId);
+    yield put({
+      type: LOAD_USER_POSTS_SUCCESS,
+      data: result.data
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_USER_POSTS_FAILURE,
+      error: err.response?.data
+    });
+  }
+}
+function loadUserPostsAPI(userId = 7, lastId = 0) {
+  return axios.get(`/user/${userId}/posts?lastId=${lastId}`);
+}
+
+function* watchLoadHashtagPosts() {
+  yield takeLatest(LOAD_HASHTAG_POSTS_REQUEST, loadHashtagPosts);
+}
+function* loadHashtagPosts(action) {
+  try {
+    const result = yield call(loadHashtagPostsAPI, action.data, action.lastId);
+
+    yield put({
+      type: LOAD_HASHTAG_POSTS_SUCCESS,
+      data: result.data
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_HASHTAG_POSTS_FAILURE,
+      error: err.response?.data
+    });
+  }
+}
+function loadHashtagPostsAPI(hashtag, lastId = 0) {
+  return axios.get(`/hashtag/${encodeURIComponent(hashtag)}?lastId=${lastId}`);
 }
 
 //== addPost
@@ -251,6 +302,8 @@ export default function* postSaga() {
     fork(watchRemovePost),
     fork(watchLoadPost),
     fork(watchLoadPosts),
+    fork(watchLoadUserPosts),
+    fork(watchLoadHashtagPosts),
     fork(watchUploadImages),
     fork(watchRetweet),
     fork(watchLikePost),
