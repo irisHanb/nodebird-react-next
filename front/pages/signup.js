@@ -15,14 +15,24 @@ const ErrorMsg = styled.div`
 
 const Signup = () => {
   const dispatch = useDispatch();
-  const { signupLoading, signupDone, signupError } = useSelector((state) => state.user);
+  const { signupLoading, signupDone, signupError, me } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (signupDone) Router.push('/');
+    if (me && me.id) {      
+      Router.replace('/');
+    }
+  }, [me]);
+
+  useEffect(() => {
+    if (signupDone) {
+      Router.replace('/');
+    }
   }, [signupDone]);
 
   useEffect(() => {
-    if (signupError) alert(signupError);
+    if (signupError) {
+      alert(signupError);
+    }
   }, [signupError]);
 
   const [email, onChangeEmail] = useInput('');
@@ -55,13 +65,12 @@ const Signup = () => {
     }
     if (!term) {
       return setTermError(true);
-    }
-    console.log(email, nickname, password);
+    }    
     dispatch({
       type: SIGN_UP_REQUEST,
       data: { email, nickname, password }
     });
-  }, [password, passwordCheck, term]);
+  }, [email, nickname, password, passwordCheck, term]);
 
   return (
     <AppLayout>
@@ -80,7 +89,7 @@ const Signup = () => {
           <Input name="user-nickname" value={nickname} required onChange={onChangeNickname} />
         </div>
         <div>
-          <label htmlFor="user-password">비말번호</label>
+          <label htmlFor="user-password">비밀번호</label>
           <br />
           <Input
             name="user-password"
@@ -91,7 +100,7 @@ const Signup = () => {
           />
         </div>
         <div>
-          <label htmlFor="user-password-check">비말번호 확인</label>
+          <label htmlFor="user-password-check">비밀번호 확인</label>
           <br />
           <Input
             name="user-password-check"

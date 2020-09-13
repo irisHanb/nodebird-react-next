@@ -1,38 +1,62 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, Avatar, Button } from 'antd';
+import Link from 'next/link';
 
-import { logoutAciton } from '../reducers/user';
+import { LOG_OUT_REQUEST } from '../reducers/user';
 
 const UserProfile = () => {
-  const { me, logoutLoading: logoutLoading } = useSelector((state) => state.user);
+  const { me, logoutLoading, logoutError } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (logoutError) {
+      alert(logoutError);
+    }
+  }, [logoutError]);
+
   const onLogout = useCallback(() => {
-    dispatch(logoutAciton());
+    dispatch({
+      type: LOG_OUT_REQUEST
+    });
   }, []);
 
   return (
     <Card
       actions={[
         <div key="twit">
-          짹짹
+          <Link href={`/user/${me.id}`}>
+            <a>짹짹</a>
+          </Link>
           <br />
           {me.Posts.length}
         </div>,
         <div key="followings">
-          팔로잉
+          <Link href={`/profile`}>
+            <a>팔로잉</a>
+          </Link>
           <br />
           {me.Followings.length}
         </div>,
         <div key="followers">
-          팔로워
+          <Link href={`/profile`}>
+            <a>팔로워</a>
+          </Link>
           <br />
           {me.Followers.length}
         </div>
       ]}
     >
-      <Card.Meta avatar={<Avatar>{me.nickname}</Avatar>} title={me.nickname}></Card.Meta>
+      <Card.Meta
+        avatar={
+          <Link href={`/user/${me.id}`}>
+            <a>
+              <Avatar>{me.nickname}</Avatar>
+            </a>
+          </Link>
+        }
+        title={me.nickname}
+      ></Card.Meta>
       <Button onClick={onLogout} loading={logoutLoading}>
         로그아웃
       </Button>
