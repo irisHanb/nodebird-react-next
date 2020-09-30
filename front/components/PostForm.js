@@ -4,6 +4,7 @@ import { Form, Input, Button } from 'antd';
 
 import { UPLOAD_IMAGES_REQUEST, REMOVE_IMAGE, ADD_POST_REQUEST } from '../reducers/post';
 import useInput from '../hooks/useInput';
+import { backUrl } from '../config/config';
 
 const PostForm = () => {
   const { imagePaths, addPostDone, addPostLoading, addPostError } = useSelector(
@@ -91,7 +92,7 @@ const PostForm = () => {
       <div>
         {imagePaths.map((v, idx) => (
           <div key={v} style={{ display: 'inline-block' }}>
-            <img src={`http://localhost:3065/${v}`} alt={v} style={{ width: '200px' }} />
+            <img src={`${backUrl}/${v}`} alt={v} style={{ width: '200px' }} />
             <div>
               <Button onClick={onRemoveImage(idx)}>제거</Button>
             </div>

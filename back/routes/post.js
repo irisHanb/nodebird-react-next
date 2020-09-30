@@ -6,7 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const imgPath = 'http://localhost:3065/';
+const imgPath = 'http://15.164.100.46';
 
 try {
   fs.accessSync('uploads');
@@ -73,7 +73,7 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
     }
 
     if (req.body.image) {
-      const staticUrl = 'http://localhost:3065/';
+      const staticUrl = 'http://15.164.100.46';
       if (Array.isArray(req.body.image)) {
         const images = await Promise.all(
           req.body.image.map((imgPath) =>
