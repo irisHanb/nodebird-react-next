@@ -38,7 +38,6 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
@@ -95,6 +94,9 @@ dist
 
 # Serverless directories
 .serverless/
+/front/build/
+react-nodebird.pem
+node_modules
 
 # FuseBox cache
 .fusebox/
@@ -114,3 +116,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# uploads files
+back/uploads/*
