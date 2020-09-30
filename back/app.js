@@ -66,6 +66,6 @@ app.get('/debug', (req, res) => {
   });
 });
 
-app.listen(3065, () => {
+app.listen(80, () => {
   console.log('server started...');
 });
